@@ -1,5 +1,4 @@
-// TODO Use real data
-params.input = "${projectDir}/assets/day1_example.txt"
+params.input = "${projectDir}/assets/day1.txt"
 workflow {
     // Why give me a file split by 3 spaces?
     ch_input = channel
@@ -25,5 +24,4 @@ workflow {
         }
         .sum()
         .view()
-
 }
