@@ -1,4 +1,3 @@
-
 workflow {
 
     def distances = [
@@ -22,7 +21,6 @@ workflow {
         )
         .toSortedList()
         .flatten()
-        .view()
     ch_list2 = channel
         .of(
             4,
@@ -34,7 +32,11 @@ workflow {
         )
         .toSortedList()
         .flatten()
-        .view()
 
-    matched_list = ch_list1.merge(ch_list2).view()
+    matched_list = ch_list1
+        .merge(ch_list2)
+        .map { left, right ->
+            (left - right).abs()
+        }
+        .view()
 }
