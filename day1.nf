@@ -1,4 +1,16 @@
+// TODO Use real data
+params.input = "${projectDir}/assets/day1_example.txt"
 workflow {
+    ch_input = channel
+        .fromPath(params.input)
+        .splitText { line -> line.split('   ') }
+        .multiMap { v ->
+            left: v[0]
+            right: v[1]
+        }
+
+    ch_input.left.view { v -> "foo ${v}" }
+    ch_input.right.view { v -> "bar ${v}" }
 
     def distances = [
         2,
@@ -38,5 +50,7 @@ workflow {
         .map { left, right ->
             (left - right).abs()
         }
+        .view()
+        .sum()
         .view()
 }
