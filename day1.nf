@@ -20,7 +20,7 @@ workflow {
 }
 workflow PART1 {
     take:
-    ch_left 
+    ch_left
     ch_right
 
     main:
@@ -38,21 +38,13 @@ workflow PART1 {
 
 workflow PART2 {
     take:
-    ch_left 
+    ch_left
     ch_right
 
     main:
 
-    ch_right_list = ch_right
-        .toSortedList()
-        .flatten()
-    // Get a set of values that occured in list2
-    ch_unique = ch_right
-        .unique()
-        .map { it ->
-            // println(it)
-            ch_right_list.count(it)
-        }
-        .collect()
-        .view()
+    def frequencies = ch_right.toSortedList().countBy { it }.view()
+
+    emit:
+    ch_left
 }
