@@ -3,7 +3,13 @@ params.input = "${projectDir}/assets/day1_example.txt"
 workflow {
     ch_input = channel
         .fromPath(params.input)
-        .splitText { line -> line.split('   ') }
+        .splitCsv(
+            sep: " ",
+            strip: true
+        )
+        .map { it ->
+            [it[0], it[3].toInteger()]
+        }
         .multiMap { v ->
             left: v[0]
             right: v[1]
@@ -52,5 +58,4 @@ workflow {
         }
         .view()
         .sum()
-        .view()
 }
