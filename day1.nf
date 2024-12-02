@@ -15,8 +15,8 @@ workflow {
             left: v[0]
             right: v[1]
         }
-    PART1(ch_input.left, ch_input.right)
-    PART2(ch_input.left, ch_input.right)
+    PART1(ch_input.left, ch_input.right).view { "Part 1: ${it}" }
+    PART2(ch_input.left, ch_input.right).view { "Part 2: ${it}" }
 }
 workflow PART1 {
     take:
@@ -25,7 +25,7 @@ workflow PART1 {
 
     main:
     // Could've used reduce instead of sum
-    ch_left
+    ch_total_distance = ch_left
         .toSortedList()
         .flatten()
         .merge(ch_right.toSortedList().flatten())
@@ -33,7 +33,9 @@ workflow PART1 {
             (left - right).abs()
         }
         .sum()
-        .view { "Day 1: ${it}" }
+
+    emit:
+    total_distance = ch_total_distance
 }
 
 workflow PART2 {
@@ -45,10 +47,10 @@ workflow PART2 {
 
     ch_frequencies = ch_right.toSortedList().countBy { it }
 
-    CALCULATE(ch_left, ch_frequencies).view()
+    ch_similarity_score = CALCULATE(ch_left, ch_frequencies).sum()
 
     emit:
-    ch_left
+    similarity_score = ch_similarity_score
 }
 
 process CALCULATE {
@@ -64,8 +66,11 @@ process CALCULATE {
         println("${left} appears in the right list, so the similarity score increases")
         answer = left * frequencies_map[left]
     }
-    else {
+    else if (frequencies_map[left] == null) {
         println("${left} does not appear in the right list, so the similarity score does not increase")
         answer = 0
+    }
+    else {
+        error("Something isn't right")
     }
 }
