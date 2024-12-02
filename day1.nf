@@ -1,4 +1,4 @@
-params.input = "${projectDir}/assets/day1_example.txt"
+params.input = "${projectDir}/assets/day1.txt"
 
 workflow {
     // Why give me a file split by 3 spaces?
@@ -63,11 +63,11 @@ process CALCULATE {
 
     exec:
     if (frequencies_map[left] != null) {
-        println("${left} appears in the right list, so the similarity score increases")
+        // println("${left} appears in the right list, so the similarity score increases")
         answer = left * frequencies_map[left]
     }
     else if (frequencies_map[left] == null) {
-        println("${left} does not appear in the right list, so the similarity score does not increase")
+        // println("${left} does not appear in the right list, so the similarity score does not increase")
         answer = 0
     }
     else {
