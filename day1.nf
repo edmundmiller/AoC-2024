@@ -43,8 +43,29 @@ workflow PART2 {
 
     main:
 
-    def frequencies = ch_right.toSortedList().countBy { it }.view()
+    ch_frequencies = ch_right.toSortedList().countBy { it }
+
+    CALCULATE(ch_left, ch_frequencies).view()
 
     emit:
     ch_left
+}
+
+process CALCULATE {
+    input:
+    val left
+    val frequencies_map
+
+    output:
+    val answer
+
+    exec:
+    if (frequencies_map[left] != null) {
+        println("${left} appears in the right list, so the similarity score increases")
+        answer = left * frequencies_map[left]
+    }
+    else {
+        println("${left} does not appear in the right list, so the similarity score does not increase")
+        answer = 0
+    }
 }
