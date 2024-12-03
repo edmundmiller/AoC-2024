@@ -17,24 +17,29 @@ workflow PART1 {
     ch_input
 
     main:
-    ch_safe_reports = ch_input.count { levels ->
-    // Check if the levels are strictly increasing or strictly decreasing
-    boolean increasing = levels.everyWithIndex { it, idx ->
-        idx == 0 || it > levels[idx - 1]
-    }
-    boolean decreasing = levels.everyWithIndex { it, idx ->
-        idx == 0 || it < levels[idx - 1]
-    }
+    ch_safe_reports = ch_input.filter { levels ->
+        // Check if the levels are strictly increasing or strictly decreasing
+        def increasing = levels.every { idx ->
+            idx == levels[0] || idx > levels[levels.indexOf(idx) - 1]
+        }
+        def decreasing = levels.every { idx ->
+            idx == levels[0] || idx < levels[levels.indexOf(idx) - 1]
+        }
 
-    if (!increasing && !decreasing) {
-        return false
-    }
+        // Must be either all increasing or all decreasing
+        if (!increasing && !decreasing) {
+            return false
+        }
 
-    // Check if adjacent levels differ by at least 1 and at most 3
-    levels.everyWithIndex { it, idx ->
-        idx == 0 || (Math.abs(it - levels[idx - 1]) in 1..3)
+        // Check if adjacent levels differ by at least 1 and at most 3
+        return levels.every { idx ->
+            if (idx == levels[0]) {
+                return true
+            }
+            def diff = (idx.toInteger() - levels[levels.indexOf(idx) - 1].toInteger()).abs()
+            return diff >= 1 && diff <= 3
+        }
     }
-}
 
     emit:
     safe_reports = ch_safe_reports
