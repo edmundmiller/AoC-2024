@@ -20,14 +20,23 @@ workflow PART1 {
     ch_safe_reports = ch_input.filter { levels ->
         // Check if the levels are strictly increasing or strictly decreasing
         def increasing = levels.every { idx ->
-            idx == levels[0] || idx > levels[levels.indexOf(idx) - 1]
+            idx == levels[0] || (idx > levels[levels.indexOf(idx) - 1])
         }
         def decreasing = levels.every { idx ->
-            idx == levels[0] || idx < levels[levels.indexOf(idx) - 1]
+            idx == levels[0] || (idx < levels[levels.indexOf(idx) - 1])
+        }
+        // and no equal adjacent values
+        def noEquals = levels.every { idx ->
+            idx == levels[0] || (idx != levels[levels.indexOf(idx) - 1])
         }
 
-        // Must be either all increasing or all decreasing
+        // Must be either all increasing or all decreasing, and no equal values
+        if (!noEquals) {
+            // fail if there are equal adjacent values
+            return false
+        }
         if (!increasing && !decreasing) {
+            // fail if neither increasing nor decreasing
             return false
         }
 
