@@ -1,4 +1,4 @@
-params.input = "${projectDir}/assets/day2_example.txt"
+params.input = "${projectDir}/assets/day2.txt"
 
 workflow {
     ch_input = channel
@@ -16,7 +16,7 @@ workflow PART1 {
     ch_input
 
     main:
-    ch_safe_reports = ch_input.filter { levels ->
+    ch_safe_reports = ch_input.count { levels ->
         // Convert levels to integers
         def intLevels = levels*.toInteger()
 
